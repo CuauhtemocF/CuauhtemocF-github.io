@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Panel del Profesor</title>
+
+<style>
+
+body{
+font-family:Arial;
+text-align:center;
+}
+
+button{
+padding:12px 20px;
+margin:10px;
+font-size:16px;
+cursor:pointer;
+}
+
+table{
+margin:auto;
+border-collapse:collapse;
+}
+
+td,th{
+border:1px solid black;
+padding:8px 15px;
+}
+
+</style>
+
+</head>
+<body>
+
+<h1>Panel del Profesor</h1>
+
+<button onclick="cargarTemas()">Cargar Temas</button>
+<button onclick="verTickets()">Actualizar Tickets</button>
+<button onclick="resetear()">Resetear Sistema</button>
+
+<h2>Tickets asignados</h2>
+
+<table id="tabla">
+<tr>
+<th>ID</th>
+<th>Tema</th>
+</tr>
+</table>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+getFirestore,
+collection,
+getDocs,
+setDoc,
+doc,
+deleteDoc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+
+apiKey: "AIzaSyCd2Odf0kvDh5nkX5CWcS0pKdItayaYsv8",
+
+  authDomain: "tickets-feab1.firebaseapp.com",
+
+  projectId: "tickets-feab1",
+
+  storageBucket: "tickets-feab1.firebasestorage.app",
+
+  messagingSenderId: "550027708700",
+
+  appId: "1:550027708700:web:f470500df63d29bd75d2d9",
+
+  measurementId: "G-TN6LF6L9C6"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+async function cargarTemas(){
+
+let respuesta = await fetch("temas.json")
+let data = await respuesta.json()
+
+let col = collection(db,"temas")
+
+for(let i=0;i<data.temas.length;i++){
+
+let id="tema"+(i+1)
+
+await setDoc(doc(col,id),{
+nombre:data.temas[i].nombre
+})
+
+}
+
+alert("Temas cargados correctamente")
+
+}
+
+async function verTickets(){
+
+let tabla=document.getElementById("tabla")
+
+tabla.innerHTML="<tr><th>ID</th><th>Tema</th></tr>"
+
+let tickets=await getDocs(collection(db,"tickets"))
+
+tickets.forEach(t=>{
+
+let fila=tabla.insertRow()
+
+fila.insertCell(0).innerText=t.id
+fila.insertCell(1).innerText=t.data().tema
+
+})
+
+}
+
+async function resetear(){
+
+if(!confirm("¿Eliminar todos los tickets y temas?")) return
+
+let temas=await getDocs(collection(db,"temas"))
+let tickets=await getDocs(collection(db,"tickets"))
+
+for(const t of temas.docs){
+
+await deleteDoc(doc(db,"temas",t.id))
+
+}
+
+for(const t of tickets.docs){
+
+await deleteDoc(doc(db,"tickets",t.id))
+
+}
+
+alert("Sistema reiniciado")
+
+}
+
+window.verTickets = verTickets
+window.cargarTemas = cargarTemas
+window.resetear = resetear
+
+</script>
+
+</body>
+</html>

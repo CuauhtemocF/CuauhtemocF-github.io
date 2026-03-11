@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Asignación de Ticket</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#1e1e1e;
+color:white;
+text-align:center;
+}
+
+button{
+padding:15px 30px;
+font-size:18px;
+background:#2ecc71;
+border:none;
+border-radius:6px;
+color:white;
+cursor:pointer;
+}
+
+.ticket{
+margin-top:40px;
+background:white;
+color:black;
+padding:30px;
+width:350px;
+margin-left:auto;
+margin-right:auto;
+border-radius:10px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>Asignación de Tema</h1>
+
+<button onclick="asignar()">Tomar Ticket</button>
+
+<div id="ticket" class="ticket" style="display:none"></div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, doc, getDoc, setDoc, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+
+apiKey: "AIzaSyCd2Odf0kvDh5nkX5CWcS0pKdItayaYsv8",
+authDomain: "tickets-feab1.firebaseapp.com",
+projectId: "tickets-feab1",
+storageBucket: "tickets-feab1.firebasestorage.app",
+messagingSenderId: "550027708700",
+appId: "1:550027708700:web:f470500df63d29bd75d2d9",
+measurementId: "G-TN6LF6L9C6"
+
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+function generarID(){
+
+return "ID-"+crypto.randomUUID()
+
+}
+
+async function asignar(){
+
+let id=localStorage.getItem("ticketID")
+
+if(!id){
+
+id=generarID()
+localStorage.setItem("ticketID",id)
+
+}
+
+let ticketRef=doc(db,"tickets",id)
+let ticket=await getDoc(ticketRef)
+
+if(ticket.exists()){
+
+mostrar(ticket.data())
+
+return
+
+}
+
+let temasRef=collection(db,"temas")
+let temas=await getDocs(temasRef)
+
+if(temas.empty){
+
+alert("Ya no quedan temas")
+return
+
+}
+
+let lista=[]
+
+temas.forEach(t=>lista.push(t))
+
+let elegido=lista[Math.floor(Math.random()*lista.length)]
+
+await setDoc(ticketRef,{tema:elegido.data().nombre})
+
+await deleteDoc(doc(db,"temas",elegido.id))
+
+mostrar({tema:elegido.data().nombre})
+
+}
+
+function mostrar(data){
+
+let div=document.getElementById("ticket")
+
+div.style.display="block"
+
+div.innerHTML=`
+<h2>Tu Ticket</h2>
+<p><b>Tema:</b> ${data.tema}</p>
+`
+
+}
+
+</script>
+
+</body>
+</html>
