@@ -1,0 +1,36 @@
+{
+  "temas": [
+    {
+      "id": "tema1",
+      "nombre": "Algoritmo de Codificación de Huffman"
+    },
+    {
+      "id": "tema2",
+      "nombre": "Programar un Analizador de Protocolos Básico"
+    },
+    {
+      "id": "tema3",
+      "nombre": "Diseño de un Socket"
+    },
+    {
+      "id": "tema4",
+      "nombre": "Codificador de Lempel Ziv"
+    },
+    {
+      "id": "tema5",
+      "nombre": "Red de Comunicación en GNS3"
+    },
+    {
+      "id": "tema6",
+      "nombre": "Protocolo Parada-Espera"
+    },
+    {
+      "id": "tema7",
+      "nombre": "Código de Hamming"
+    },
+    {
+      "id": "tema8",
+      "nombre": "Configuración de una VLAN, DHCP y DNS"
+    }
+  ]
+}
